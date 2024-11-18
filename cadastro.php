@@ -67,8 +67,10 @@
             $sql_cadastro_cliente = "INSERT INTO cliente (nome_cliente, email_cliente, telefone_cliente) VALUES ('$nome_cliente', '$email_cliente', '$telefone_cliente')";
 
             if ($conn -> query($sql_cadastro_cliente) === TRUE) {
+                echo "<br>";
                 echo "Cadastro de cliente realizado com sucesso.";
             } else {
+                echo "<br>";
                 echo "Erro ao cadastrar cliente: " . mysqli_error($conn);
             }
 
