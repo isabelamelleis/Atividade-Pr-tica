@@ -2,9 +2,31 @@
 
     include "db_connect.php";
 
-    $sql_chamados = "SELECT id_chamado, email_cliente, email_colaborador, desc_chamado, status_chamado, criticidade_chamado, data_abertura_chamado FROM chamados INNER JOIN cliente ON id_cliente = fk_cliente INNER JOIN colaborador ON id_colaborador = fk_colaborador";
-    $result_chamados = $conn -> query($sql_chamados);
+    if(isset($_POST['filtrar'])) {
 
+        if(isset($_POST['criticidade_chamado'])) {
+            $criticidade_chamado = $_POST['criticidade_chamado'];
+            $sql_criticidade = "SELECT id_chamado, email_cliente, email_colaborador, desc_chamado, status_chamado, criticidade_chamado, data_abertura_chamado FROM chamados INNER JOIN cliente ON id_cliente = fk_cliente INNER JOIN colaborador ON id_colaborador = fk_colaborador WHERE criticidade_chamado = '$criticidade_chamado'";
+            $result_chamados = $conn -> query($sql_criticidade);
+        }
+
+        if(isset($_POST['status_chamado'])) {
+            $status_chamado = $_POST['status_chamado'];
+            $sql_status = "SELECT id_chamado, email_cliente, email_colaborador, desc_chamado, status_chamado, criticidade_chamado, data_abertura_chamado FROM chamados INNER JOIN cliente ON id_cliente = fk_cliente INNER JOIN colaborador ON id_colaborador = fk_colaborador WHERE status_chamado = '$status_chamado'";
+            $result_chamados = $conn -> query($sql_status);
+        }
+
+        if(isset($_POST['status_chamado']) && isset($_POST['criticidade_chamado'])) {
+            $criticidade_chamado = $_POST['criticidade_chamado'];
+            $status_chamado = $_POST['status_chamado'];
+            $sql_criticidade_status = "SELECT id_chamado, email_cliente, email_colaborador, desc_chamado, status_chamado, criticidade_chamado, data_abertura_chamado FROM chamados INNER JOIN cliente ON id_cliente = fk_cliente INNER JOIN colaborador ON id_colaborador = fk_colaborador WHERE criticidade_chamado = '$criticidade_chamado' AND status_chamado = '$status_chamado'";
+            $result_chamados = $conn -> query($sql_criticidade_status);
+        }
+
+    } else {
+        $sql_chamados = "SELECT id_chamado, email_cliente, email_colaborador, desc_chamado, status_chamado, criticidade_chamado, data_abertura_chamado FROM chamados INNER JOIN cliente ON id_cliente = fk_cliente INNER JOIN colaborador ON id_colaborador = fk_colaborador";
+        $result_chamados = $conn -> query($sql_chamados);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +50,34 @@
     </a>
     <br>
     <br>
-
+    <fieldset>
+        <h3>
+            Filtros:
+        </h3>
+        <form action="index.php" method="POST">
+            <label for="criticidade_chamado">Criticidade do chamado:</label>
+                <select name="criticidade_chamado">
+                    <option selected disabled>Selecione</option>
+                    <option value="Baixa" name="criticidade_baixa">Baixa</option>
+                    <option value="Média" name="criticidade_media">Média</option>
+                    <option value="Alta" name="criticidade_alta">Alta</option>
+                </select>
+                <br>
+                <label for="status_chamado">Status do chamado:</label>
+                <select name="status_chamado">
+                    <option selected disabled>Selecione</option>
+                    <option value="Aberto" name="chamado_aberto">Aberto</option>
+                    <option value="Em andamento" name="chamado_em_andamento">Em andamento</option>
+                    <option value="Resolvido" name="chamado_resolvido">Resolvido</option>
+                </select>
+                <br>
+                <br>
+                <button type="submit" name="filtrar">
+                    Filtrar
+                </button>
+        </form>
+    </fieldset>
+    <br>
     <?php
         if($result_chamados -> num_rows > 0) {
             echo "<table border='1'>
@@ -63,6 +112,5 @@
             echo "Nenhum chamado registrado.";
         }
     ?>
-
 </body>
 </html>
